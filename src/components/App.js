@@ -1,40 +1,63 @@
-import React, { Component, useState } from "react";
-import "../styles/App.css";
-import Slide from "./Slide/Slide";
-import Navigation from "./Navigation/Navigation";
+import React, {useState, useEffect} from "react";
+import '../styles/App.css';
 
-const App = (props) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+const App = ({slides}) => {
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [prevFlag, setPrevFlag] = useState(true);
+  const [nextFlag, setNextFlag] = useState(false);
+  const [restartFlag, setRestartFlag] = useState(true);
 
-  const nextSlideHandler = () => {
-    if (currentSlide < props.slides.length - 1) {
-      setCurrentSlide(+currentSlide + 1);
+  useEffect(() => {
+    // if current slide is the first one
+    if(slideIndex === 0) {
+      setPrevFlag(true);
+      setRestartFlag(true);
+    } else {
+      setPrevFlag(false);
+      setRestartFlag(false);
     }
-  };
 
-  const prevSlideHandler = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(+currentSlide - 1);
+    // if current slide is the last one
+    if(slideIndex === slides.length - 1) {
+      setNextFlag(true);
+    } else {
+      setNextFlag(false);
     }
-  };
 
-  const restartHandler = () => setCurrentSlide(0);
+  }, [slideIndex])
+
+  const handlePrevClick = () => {
+      
+      setSlideIndex((prevState) => prevState - 1);
+  }
+
+  const handleNextClick = () => {
+      setSlideIndex((prevState) => prevState + 1);
+  }
+
+  const handleRestartClick = () => {
+    setSlideIndex(0);
+  }
+
+
 
   return (
     <>
-      <Slide
-        title={props.slides[+currentSlide].title}
-        text={props.slides[+currentSlide].text}
-      />
-      <Navigation
-        isFirst={currentSlide == 0}
-        isLast={currentSlide == props.slides.length - 1}
-        prev={prevSlideHandler}
-        restart={restartHandler}
-        next={nextSlideHandler}
-      />
+      <h1 id="heading">Amazon Prime: Trending</h1>
+      <div>
+        <div>
+          <h1 data-testid="title">{slides[slideIndex].title}</h1>
+          <p data-testid="text">{slides[slideIndex].text}</p>
+        </div>
+        
+        <button data-testid="button-prev" onClick={handlePrevClick} disabled={prevFlag}>Prev</button>
+        <button data-testid="button-next" onClick={handleNextClick} disabled={nextFlag}>Next</button>
+        <button data-testid="button-restart" onClick={handleRestartClick} disabled={restartFlag}>Restart</button>
+    
+      </div>
     </>
-  );
-};
+  )
+}
+
 
 export default App;
